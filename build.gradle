@@ -39,6 +39,14 @@ dependencies {
 	// jsp 처리
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
 	implementation 'javax.servlet:jstl'
+
+	// OAuth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// 웹소켓
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.2'
+
 }
 
 tasks.named('test') {

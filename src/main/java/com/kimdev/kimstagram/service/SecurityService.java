@@ -5,7 +5,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.kimdev.kimstagram.Repository.AccountRepository;
 import com.kimdev.kimstagram.Repository.PostLikeRepository;
 import com.kimdev.kimstagram.Repository.PostRepository;
+import com.kimdev.kimstagram.Repository.RefreshtokenRepository;
 import com.kimdev.kimstagram.model.Account;
+import com.kimdev.kimstagram.model.Refreshtoken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,9 @@ public class SecurityService {
     @Autowired
     PostLikeRepository postLikeRepository;
 
+    @Autowired
+    RefreshtokenRepository refreshtokenRepository;
+
     @Transactional
     public Account getPrincipal (String token) {
         String jwtToken = token.replace("Bearer ", ""); // prefix는 빠지고 토큰 부분만 token에 담김.
@@ -30,8 +35,18 @@ public class SecurityService {
                 .build().verify(jwtToken) // 토큰 서명
                 .getClaim("username").asString(); // 토큰에서 username을 가져온 후 String으로 캐스팅
 
-        Account principal = accountRepository.findByUsername(username).get();
+        Account principal = accountRepository.findByUsername(username);
 
         return principal;
+    }
+
+    @Transactional
+    public void saveRefreshToken (String refreshToken, Account principal) {
+        Refreshtoken refreshtoken = new Refreshtoken();
+        refreshtoken.setRefreshToken(refreshToken);
+        refreshtoken.setAccount(principal);
+
+        refreshtokenRepository.deleteByAccount(principal);
+        refreshtokenRepository.save(refreshtoken);
     }
 }

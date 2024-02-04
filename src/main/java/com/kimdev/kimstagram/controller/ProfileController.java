@@ -32,7 +32,7 @@ public class ProfileController {
 
     @GetMapping("/profile/{username}")
     public String profile(@PathVariable String username, Model model) {
-        Account user = accountRepository.findByUsername(username).get();
+        Account user = accountRepository.findByUsername(username);
         ArrayList<Post> posts = postRepository.findAllByAccount(user);
 
         model.addAttribute("user", user);

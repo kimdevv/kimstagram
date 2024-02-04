@@ -1,10 +1,14 @@
 package com.kimdev.kimstagram.Security;
 
 import com.kimdev.kimstagram.Repository.AccountRepository;
+import com.kimdev.kimstagram.Repository.RefreshtokenRepository;
 import com.kimdev.kimstagram.Security.filter.ApplyingFilter;
 import com.kimdev.kimstagram.Security.filter.JwtAuthenticationFilter;
 import com.kimdev.kimstagram.Security.filter.JwtAuthorizationFilter;
+import com.kimdev.kimstagram.Security.filter.JwtRefreshFilter;
 import com.kimdev.kimstagram.controller.api.auth.AuthenticationService;
+import com.kimdev.kimstagram.service.OAuth2Service;
+import com.kimdev.kimstagram.service.SecurityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
     private final AccountRepository accountRepository;
+    private final SecurityService securityService;
+    private final RefreshtokenRepository refreshtokenRepository;
+    private final OAuth2Service oAuth2Service;
 
     @Bean
     public BCryptPasswordEncoder encoder() {
@@ -54,11 +61,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/checkToken").access(("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')"))
                 .antMatchers("/**", "/index", "/auth/**", "/login", "/join", "/js/**", "/dynamicImage/**", "/image/**", "/favicon.ico").permitAll()
                 .anyRequest().authenticated()
+                .and().oauth2Login()
+                    .successHandler(((request, response, authentication) -> {
+                    oAuth2Service.loginSuccess(request, response, authentication);
+                }))
                 .and().exceptionHandling().authenticationEntryPoint(((request, response, authException) -> response.sendRedirect("/")));
 
         // 필터 구성
         http.addFilter(corsFilter)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // WebSecurityConfiguererAdapter가 갖고 있어서 그냥 넘겨주면 된다.
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), accountRepository));
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), securityService)) // WebSecurityConfiguererAdapter가 갖고 있어서 그냥 넘겨주면 된다.
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), accountRepository))
+                .addFilterAfter(new JwtRefreshFilter(refreshtokenRepository), JwtAuthenticationFilter.class);
     }
 }

@@ -15,6 +15,14 @@ function MenuMouseDown(name) {
     document.getElementById(name+"button").style.heightth = '20px';
 }
 
+$("#find").on("click", function() {
+    location.href = "/find";
+})
+
+$("#insta").on("click", function() {
+    location.href = "/index";
+})
+
 $("#home").on("click", function() {
     location.href = "/index";
 })

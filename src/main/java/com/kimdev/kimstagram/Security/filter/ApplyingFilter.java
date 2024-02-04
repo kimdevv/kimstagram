@@ -12,7 +12,7 @@ public class ApplyingFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        if(req.getMethod().equals("POST")) { // GET 요청이 들어올 경우 동작
+        if(req.getMethod().equals("GET")) { // GET 요청이 들어올 경우 동작
             String tokenHeader = req.getHeader(("Authorization"));
             if (tokenHeader == null || !tokenHeader.startsWith("Bearer ")) { // 로그인되지 않았다면
                 ((HttpServletResponse) response).sendRedirect("/");

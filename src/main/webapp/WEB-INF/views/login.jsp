@@ -76,7 +76,7 @@
                 <!-- id, password, 로그인 -->
                 <div class="form-group">
                     <input id="username" type="text" class="form-control IdAndPwd" placeholder="전화번호, 사용자 이름 또는 이메일" style="margin-bottom: 6px;">
-                    <input id="password" type="password" class="form-control IdAndPwd" placeholder="비밀번호" style="margin-bottom: 12px;">
+                    <input id="password" type="password" class="form-control IdAndPwd" placeholder="비밀번호" style="margin-bottom: 12px;" onkeydown="keyHandler(event)">
                     <button id="btn-login" class="btn btn-primary Login" disabled><span id="loginText">로그인</span></button>
 
                     <div style="text-align: center; margin-top: 20px; margin-bottom: 30px; position: relative;">
@@ -85,7 +85,7 @@
                     </div>
 
                     <!-- 페이스북 로그인 버튼 -->
-                    <a href="https://kimdevstudio.com"><img src="/image/login/log_fc.png" id="facebookButton" onmousedown="index.facebookClick()"/></a>
+                    <a href="/oauth2/authorization/facebook"><img src="/image/login/log_fc.png" id="facebookButton" onmousedown="index.facebookClick()"/></a>
                     <div style="margin-bottom: 16px"></div>
 
                     <div id="ErrorMessageBox" style="margin-bottom: 20px"></div>

@@ -49,11 +49,14 @@ let index = {
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8"
         }).done(function(resp, status, xhr) {
-            token = xhr.getResponseHeader('Authorization')
-            if (token != null) { // 로그인에 성공한 경우
-                localStorage.setItem('Authorization', token)
+            accesstoken = xhr.getResponseHeader('Authorization')
+            refreshtoken = xhr.getResponseHeader('Refresh-Token')
+
+            if (accesstoken != null && refreshtoken != null) { // 로그인에 성공한 경우
+                localStorage.setItem('Authorization', accesstoken)
+                localStorage.setItem('Refresh-Token', refreshtoken)
                 location.href = "/index";
-            } else {
+            } else { // 로그인에 실패한 경우
                 var ErrorMessageSpan = document.createElement('span');
                 ErrorMessageSpan.id = 'ErrorMessage';
                 ErrorMessageSpan.textContent = '잘못된 비밀번호입니다. 다시 확인하세요.';
@@ -61,7 +64,7 @@ let index = {
                 ErrorMessageSpan.style.fontSize = '14px';
                 document.getElementById('ErrorMessageBox').appendChild(ErrorMessageSpan);
             }
-        }).fail(function(error) {
+        }).fail(function(error) { // 로그인에 실패한 경우
             var ErrorMessageSpan = document.createElement('span');
             ErrorMessageSpan.id = 'ErrorMessage';
             ErrorMessageSpan.textContent = '잘못된 비밀번호입니다. 다시 확인하세요.';
@@ -70,6 +73,15 @@ let index = {
             document.getElementById('ErrorMessageBox').appendChild(ErrorMessageSpan);
             console.log(JSON.stringify(error));
         });
+    }
+}
+
+function keyHandler(event) {
+    var usrValue = document.getElementById('username').value;
+    var passwordValue = document.getElementById('password').value;
+    if (usrValue.length >= 1 && passwordValue.length >= 6 && event.key == 'Enter') { // Enter 키를 누르는 경우
+        event.preventDefault(); // 기본 Enter 키 동작을 막는다.
+        index.login();
     }
 }
 

@@ -18,7 +18,7 @@ public class PrincipalDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // password는 스프링이 알아서 처리해 주므로 우리는 username만 관리해주면 됨.
-        Account principal = accountRepository.findByUsername(username).get();
+        Account principal = accountRepository.findByUsername(username);
         return new PrincipalDetail(principal);
     }
 }

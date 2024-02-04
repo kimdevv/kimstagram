@@ -5,12 +5,15 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kimdev.kimstagram.controller.api.auth.PrincipalDetail;
 import com.kimdev.kimstagram.model.Account;
+import com.kimdev.kimstagram.service.SecurityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,10 +24,13 @@ import java.io.IOException;
 import java.util.Date;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private AuthenticationManager authenticationManager;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    private AuthenticationManager authenticationManager;
+    private SecurityService securityService;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, SecurityService securityService) {
         this.authenticationManager = authenticationManager;
+        this.securityService = securityService;
         setFilterProcessesUrl("/auth/loginProc");
     }
 
@@ -66,7 +72,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withClaim("username", principalDetail.getAccount().getUsername())
                 .sign(Algorithm.HMAC512("kimdevAuth")); // 토큰에 붙일 고유한 Secret 값
 
-        // 만든 JWT토큰을 헤더에 붙여서 응답
+        // 리프레시 토큰 생성
+        String refreshToken = JWT.create()
+                .withSubject("JWT_TOKEN")
+                .withExpiresAt(new Date(System.currentTimeMillis() + (60000*60 * 24))) // 24시간 동안 유효
+                .withClaim("refresh", "refresh")
+                .sign(Algorithm.HMAC512("kimdevRefresh"));
+
+
+        // 만든 토큰들을 헤더에 붙여서 응답
         response.addHeader("Authorization", "Bearer "+jwtToken);
+        response.addHeader("Refresh-Token", "Bearer "+refreshToken);
+
+        securityService.saveRefreshToken(refreshToken, principalDetail.getAccount());
     }
 }

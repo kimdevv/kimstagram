@@ -6,7 +6,8 @@
     $.ajax({
         type: "GET",
         url: "/getPrincipal",
-        headers: {'Authorization':localStorage.getItem('Authorization')},
+        headers: {'Authorization':localStorage.getItem('Authorization'),
+            'Refresh-Token':localStorage.getItem('Refresh-Token')},
         contentType: "application/json; charset=utf-8",
     }).done(function(resp) {
         principal = resp;

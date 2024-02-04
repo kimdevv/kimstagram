@@ -47,7 +47,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         // username이 잘 들어왔다는 것은, 서명이 정상적으로 됐다는 뜻.
         if (username != null) {
-            Account accountEntity = accountRepository.findByUsername(username).get();
+            Account accountEntity = accountRepository.findByUsername(username);
             PrincipalDetail principalDetail = new PrincipalDetail(accountEntity);
 
             // 이미 서명된 토큰을 통해 username이 있다는 걸 확인했으니, 그냥 강제로 Authentication 객체를 만들어도 됨.

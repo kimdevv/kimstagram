@@ -73,7 +73,7 @@ prevButton.style.display = currentIdx === 0 ? 'none' : '';
 nextButton.style.display = currentIdx === post_picsize - 1 ? 'none' : '';
 
 document.getElementById('imagePrevButton').addEventListener('click', () => {
-    currentIdx = (currentIdx - 1 + post_picsize) % post_picsize;
+    currentIdx = (parseInt(currentIdx-1, 10) + parseInt(post_picsize, 10)) % post_picsize;
     updateImage();
     prevButton.style.display = currentIdx === 0 ? 'none' : '';
     nextButton.style.display = currentIdx === post_picsize - 1 ? 'none' : '';

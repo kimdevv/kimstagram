@@ -11,5 +11,6 @@ import java.util.ArrayList;
 public interface PostLikeRepository extends JpaRepository<PostLike, Integer> {
     PostLike findByAccount(Account account);
     ArrayList<PostLike> findAllByAccountAndPost(Account account, Post post);
+    ArrayList<PostLike> findAllByPost(Post post);
     void deleteByAccountAndPost(Account account, Post post);
 }

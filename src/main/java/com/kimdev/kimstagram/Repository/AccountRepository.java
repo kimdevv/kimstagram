@@ -11,8 +11,10 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     Account findByUsernameAndPassword(String username, String password);
+    Account findByProviderId(String providerId);
 
-    Optional<Account> findByUsername(String username);
+    Account findByUsername(String username);
 
     ArrayList<Account> findAllByOrderByFollowerDesc();
+    ArrayList<Account> findAllByUsernameLike(String username);
 }

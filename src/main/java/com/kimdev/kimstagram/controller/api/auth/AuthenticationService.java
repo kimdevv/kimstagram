@@ -15,5 +15,7 @@ public class AuthenticationService implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         response.getWriter().print("1");
         response.getWriter().flush();
+
+        System.out.println("이거나오냐????");
     }
 }

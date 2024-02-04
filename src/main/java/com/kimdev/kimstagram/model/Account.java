@@ -39,6 +39,8 @@ public class Account {
 
     private int following;
 
+    private String providerId;
+
     @Enumerated(EnumType.STRING)
     private RoleType role;
 

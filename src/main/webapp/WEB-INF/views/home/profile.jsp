@@ -30,6 +30,7 @@
             font-weight: bold;
             border: 0px;
             border-radius: 8px;
+            font-size: 14px;
         }
         .followButton:hover {
             background-color: #1877f2;
@@ -106,26 +107,43 @@
             <div id="name_div">
                 <div id="name_div_line1" style="display: flex; align-items: center;">
                     <span id="nameBox" style="font-size: 20px;">${user.username}</span>
-                    <div id="isMyProfile" style="display: flex; align-items: center;">
+                    <div id="isMyProfile${user.id}" style="display: flex; align-items: center;">
                         <script>
                             $.ajax({
                                 type: "GET",
                                 url: "/getPrincipal",
-                                headers: {'Authorization':localStorage.getItem('Authorization')},
+                                headers: {'Authorization':localStorage.getItem('Authorization'),
+                                    'Refresh-Token':localStorage.getItem('Refresh-Token')},
                                 contentType: "application/json; charset=utf-8",
                             }).done(function(resp) {
+                                var id = ${user.id};
                                 principal = resp;
                                     if(principal.username == "${user.username}") {
-                                    $('#isMyProfile').append('<button id="editProfile" class="profileButton" style="width: 104px; height: 32px; margin-left: 16px" onclick="editProfile()">프로필 편집</button>');
-                                    $('#isMyProfile').append('<button id="viewStory" class="profileButton" style="width: 150px; height: 32px; margin-left: 4px">보관된 스토리 보기</button>');
-                                    $('#isMyProfile').append('<div id="optionButton" style="width: 40px; height: 40px; margin-left: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="showOptionPopup()"><img src="/image/profile/option.png"></div>');
+                                    $('#isMyProfile${user.id}').append('<button id="editProfile" class="profileButton" style="width: 104px; height: 32px; margin-left: 16px" onclick="editProfile()">프로필 편집</button>');
+                                    $('#isMyProfile${user.id}').append('<button id="viewStory" class="profileButton" style="width: 150px; height: 32px; margin-left: 4px">보관된 스토리 보기</button>');
+                                    $('#isMyProfile${user.id}').append('<div id="optionButton" style="width: 40px; height: 40px; margin-left: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="showOptionPopup()"><img src="/image/profile/option.png"></div>');
                                 } else {
-                                    $('#isMyProfile').append('<button id="followButton" class="followButton" style="width: 82px; height: 32px; margin-left: 20px">팔로우</button>');
-                                    $('#isMyProfile').append('<button id="messageButton" class="profileButton" style="width: 120px; height: 32px; margin-left: 8px">메시지 보내기</button>');
-                                    $('#isMyProfile').append('<button id="recommendButton" class="profileButton" style="width: 34px; height: 32px; margin-left: 8px"><img src="/dynamicImage/profile/recommend.png"></button>');
-                                    $('#isMyProfile').append('<button id="useroptionButton" style="background-color: white; border: 0px; width: 32px; height: 32px; margin-left: 16px"><img src="/image/profile/useroption.png"></button>');
+                                    $('#isMyProfile${user.id}').append('<div id="followOrUnfollow"></div>')
+                                    $('#isMyProfile${user.id}').append('<button id="messageButton" class="profileButton" style="width: 120px; height: 32px; margin-left: 8px" onclick="sendDm(${user.id})">메시지 보내기</button>');
+                                    $('#isMyProfile${user.id}').append('<button id="recommendButton" class="profileButton" style="width: 34px; height: 32px; margin-left: 8px"><img src="/dynamicImage/profile/recommend.png"></button>');
+                                    $('#isMyProfile${user.id}').append('<button id="useroptionButton" style="background-color: white; border: 0px; width: 32px; height: 32px; margin-left: 16px"><img src="/image/profile/useroption.png"></button>');
+                                    let data = {
+                                        fromaccountId: principal.id,
+                                        toaccountId: ${user.id}
+                                    }
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "/getFollowInfo",
+                                        data: data, // GET 요청은 JSON으로 보내지 않고 그대로 보낸다.
+                                        contentType: "application/json; charset=utf-8",
+                                    }).done(function (resp) {
+                                        if (resp === 1) { // 팔로우 되어 있는 경우
+                                            $('#followOrUnfollow').append('<button id="unfollowButton${user.id}" class="profileButton" style="width: 82px; height: 32px; margin-left: 20px; font-size: 14px" onclick="onclickUnfollow(principal.id, ${user.id})">팔로잉</button>');
+                                        } else if (resp === 0) { // 팔로우 안 되어 있는 경우
+                                            $('#followOrUnfollow').append('<button id="followButton${user.id}" class="followButton" style="width: 82px; height: 32px; margin-left: 20px" onclick="onclickFollow(principal.id, ${user.id})">팔로우</button>');
+                                        }
+                                    })
                                 }
-                            }).fail(function (resp) {
                             });
                         </script>
                     </div>
